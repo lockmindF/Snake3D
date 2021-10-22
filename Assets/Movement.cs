@@ -4,64 +4,82 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    // Settings
+
     public float MoveSpeed = 2;
     public float SteerSpeed = 300;
-    public float BodySpeed = 5;
-    public int Gap = 10;
+    public float BodySpeed = 0.1f;
+    public int Gap = 30;
+    public Camera camera;
 
 
 
-    // Lists
     public List<GameObject> BodyParts = new List<GameObject>();
     private List<Vector3> PositionsHistory = new List<Vector3>();
 
-    // Start is called before the first frame update
+
     void Start()
     {
-        GrowSnake();
-        GrowSnake();
-        GrowSnake();
-        GrowSnake();
-        GrowSnake();
+        camera = Camera.main;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
 
-        // Move forward
         transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+        if (Input.GetMouseButton(0))
+        {
+            //if(Input.mousePosition.x != transform.position.x)
+            //{
+            //    transform.position = Vector3.MoveTowards(transform.position,new Vector3(Input.mousePosition.x-127.5f, 0,0) , Time.deltaTime * SteerSpeed);
+            //    float steerDirection = Input.mousePosition.x - 127.5f;
+            //    transform.Rotate(Vector3.up * steerDirection / 2 * SteerSpeed * Time.deltaTime);
+            //    if(Input.mousePosition.x-127.5f == transform.position.x)
+            //    {
+            //        transform.position = new Vector3(1,0,0) * MoveSpeed * Time.deltaTime;
+            //    }
+            //}
+            //else
+            //{
+            //    transform.Rotate(Vector3.up * 0 * SteerSpeed * Time.deltaTime);
+            //}
+            Controls();
 
-        // Steer
-        float steerDirection = Input.GetAxis("Horizontal"); // Returns value -1, 0, or 1
-        transform.Rotate(Vector3.up * steerDirection * SteerSpeed * Time.deltaTime);
+        }
 
-        // Store position history
+
         PositionsHistory.Insert(0, transform.position);
 
-        // Move body parts
+
         int index = 0;
         foreach (var body in BodyParts)
         {
             Vector3 point = PositionsHistory[Mathf.Min(index * Gap, PositionsHistory.Count - 1)];
 
-            // Move body towards the point along the snakes path
+
             Vector3 moveDirection = point - body.transform.position;
             body.transform.position += moveDirection * BodySpeed * Time.deltaTime;
 
-            // Rotate body towards the point along the snakes path
+
             body.transform.LookAt(point);
 
             index++;
         }
     }
 
-    private void GrowSnake()
+    public void Controls()
     {
-        // Instantiate body instance and
-        // add it to the list
-        //GameObject body = Instantiate(BodyPrefab);
-        //BodyParts.Add(body);
+        Ray ray = camera.ScreenPointToRay(new Vector3(Input.mousePosition.x, 0, 0));
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.point.x != transform.position.z)
+            {
+                transform.position += transform.forward * MoveSpeed * Time.deltaTime*4;
+                transform.position = Vector3.MoveTowards(transform.position, hit.point, Time.deltaTime * SteerSpeed*4);
+            }
+          
+        }
     }
 }
