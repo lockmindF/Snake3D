@@ -3,7 +3,22 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Red
+  - green
+  - Level
+  - red
+  - blue check
+  - red check
+  - yellow check
+  - magenta check
+  - obstacles
+  - cyan
+  - yellow
+  - magenta
+  - diamond
+  - orange check
+  - orange
   layers:
   - Default
   - TransparentFX

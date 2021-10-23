@@ -53,9 +53,16 @@
     <UnityVersion>2020.3.16f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Assets\Enemy.cs" />
     <Compile Include="Assets\Movement.cs" />
     <Compile Include="Assets\CameraController.cs" />
     <Compile Include="Assets\GameManager.cs" />
+    <Compile Include="Assets\AurynSky\Gems Ultimate Pack\Scripts\AnimationScript.cs" />
+    <Compile Include="Assets\Diamond.cs" />
+    <Compile Include="Assets\Obstacle.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\AurynSky\Gems Ultimate Pack\READ ME.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

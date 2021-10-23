@@ -5,11 +5,16 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
 
-    public float MoveSpeed = 2;
-    public float SteerSpeed = 300;
-    public float BodySpeed = 0.1f;
-    public int Gap = 30;
+    public float MoveSpeed = 5;
+    public float SteerSpeed = 5;
+    public float BodySpeed = 20;
+    public int Gap = 6;
     public Camera camera;
+    public string color = "green";
+    public GameObject body;
+    public float timeRemaining = 0;
+    public bool feverMode = false;
+    public int diamondInRow = 0;
 
 
 
@@ -25,24 +30,23 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-
+        
+        if (timeRemaining != 0)
+        {
+            timeRemaining -= Time.deltaTime;
+            if (timeRemaining <= 0)
+            {
+                feverMode = false;
+                timeRemaining = 0;
+                MoveSpeed /= 3;
+                Gap *= 3;
+                diamondInRow = 0;
+            }
+        }
+        
         transform.position += transform.forward * MoveSpeed * Time.deltaTime;
         if (Input.GetMouseButton(0))
         {
-            //if(Input.mousePosition.x != transform.position.x)
-            //{
-            //    transform.position = Vector3.MoveTowards(transform.position,new Vector3(Input.mousePosition.x-127.5f, 0,0) , Time.deltaTime * SteerSpeed);
-            //    float steerDirection = Input.mousePosition.x - 127.5f;
-            //    transform.Rotate(Vector3.up * steerDirection / 2 * SteerSpeed * Time.deltaTime);
-            //    if(Input.mousePosition.x-127.5f == transform.position.x)
-            //    {
-            //        transform.position = new Vector3(1,0,0) * MoveSpeed * Time.deltaTime;
-            //    }
-            //}
-            //else
-            //{
-            //    transform.Rotate(Vector3.up * 0 * SteerSpeed * Time.deltaTime);
-            //}
             Controls();
 
         }
@@ -69,17 +73,110 @@ public class Movement : MonoBehaviour
 
     public void Controls()
     {
-        Ray ray = camera.ScreenPointToRay(new Vector3(Input.mousePosition.x, 0, 0));
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
+        if (!feverMode)
         {
-            if (hit.point.x != transform.position.z)
+            Ray ray = camera.ScreenPointToRay(new Vector3(Input.mousePosition.x, 0, 0));
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
             {
-                transform.position += transform.forward * MoveSpeed * Time.deltaTime*4;
-                transform.position = Vector3.MoveTowards(transform.position, hit.point, Time.deltaTime * SteerSpeed*4);
+                if (hit.point.x != transform.position.z)
+                {
+
+                    transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z + 4));
+
+
+
+                }
+
             }
-          
+        }
+        
+    }
+    public void FeverMode()
+    {
+        transform.position = new Vector3(0, transform.position.y, transform.position.z);
+        transform.LookAt(new Vector3(0, transform.position.y, transform.position.z+100));
+        feverMode = true;
+        MoveSpeed *= 3;
+        Gap /= 3;
+        timeRemaining = 5;
+        
+        
+        
+
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+        string col = collision.gameObject.tag;
+        if (col == "diamond")
+        {
+            FindObjectOfType<GameManager>().DiamondScore();
+            diamondInRow++;
+            if (diamondInRow == 4)
+            {
+                FeverMode();
+            }
+        }
+        if (col == "obstacles" && feverMode == false)
+        {
+            gameObject.SetActive(false);
+        }
+
+
+       
+        if (col == "green" || col == "red" || col == "cyan" || col == "yellow" || col == "magenta" || col == "orange")
+        {
+            if (col == color)
+            {
+                FindObjectOfType<GameManager>().EnemyScore();
+                diamondInRow = 0;
+                
+            }
+
+            if (col != color && feverMode == false)
+            {
+                gameObject.SetActive(false);
+            }
+            if (col != color && feverMode == true)
+            {
+                FindObjectOfType<GameManager>().EnemyScore();
+            }
+        }
+
+
+    }
+    private void OnTriggerEnter(Collider colider)
+    {
+        string col = colider.gameObject.tag;
+       
+
+        if (col == "blue check")
+        {
+            body.GetComponent<Renderer>().material.color = Color.cyan;
+            color = "cyan";
+        }
+        if (col == "red check")
+        {
+            body.GetComponent<Renderer>().material.color = Color.red;
+            color = "red";
+        }
+        if (col == "yellow check")
+        {
+            body.GetComponent<Renderer>().material.color = Color.yellow;
+            color = "yellow";
+        }
+        if (col == "magenta check")
+        {
+            body.GetComponent<Renderer>().material.color = Color.magenta;
+            color = "magenta";
+        }
+        if (col == "orange check")
+        {
+            body.GetComponent<Renderer>().material.color = new Color(1, 0.6f, 0, 1);
+            color = "orange";
         }
     }
 }
