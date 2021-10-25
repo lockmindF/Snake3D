@@ -30,22 +30,11 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        TimeRemaining();
+        MoveZ();
+        BodyPart();
         
-        if (timeRemaining != 0)
-        {
-            timeRemaining -= Time.deltaTime;
-            if (timeRemaining <= 0)
-            {
-                feverMode = false;
-                timeRemaining = 0;
-                MoveSpeed /= 3;
-                Gap *= 3;
-                diamondInRow = 0;
-                FindObjectOfType<GameManager>().DiamondZero();
-            }
-        }
         
-        transform.position += transform.forward * MoveSpeed * Time.deltaTime;
         if (Input.GetMouseButton(0))
         {
             Controls();
@@ -53,6 +42,10 @@ public class Movement : MonoBehaviour
         }
 
 
+        
+    }
+    public void BodyPart()
+    {
         PositionsHistory.Insert(0, transform.position);
 
 
@@ -69,6 +62,27 @@ public class Movement : MonoBehaviour
             body.transform.LookAt(point);
 
             index++;
+        }
+    }
+    public void MoveZ()
+    {
+
+        transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+    }
+    public void TimeRemaining()
+    {
+        if (timeRemaining != 0)
+        {
+            timeRemaining -= Time.deltaTime;
+            if (timeRemaining <= 0)
+            {
+                feverMode = false;
+                timeRemaining = 0;
+                MoveSpeed /= 3;
+                Gap *= 3;
+                diamondInRow = 0;
+                FindObjectOfType<GameManager>().DiamondZero();
+            }
         }
     }
 
