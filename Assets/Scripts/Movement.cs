@@ -18,6 +18,7 @@ public class Movement : MonoBehaviour
 
 
 
+
     public List<GameObject> BodyParts = new List<GameObject>();
     private List<Vector3> PositionsHistory = new List<Vector3>();
 
@@ -47,12 +48,11 @@ public class Movement : MonoBehaviour
     public void BodyPart()
     {
         PositionsHistory.Insert(0, transform.position);
-
-
         int index = 0;
         foreach (var body in BodyParts)
         {
             Vector3 point = PositionsHistory[Mathf.Min(index * Gap, PositionsHistory.Count - 1)];
+            Debug.Log(Gap);
 
 
             Vector3 moveDirection = point - body.transform.position;
@@ -78,8 +78,7 @@ public class Movement : MonoBehaviour
             {
                 feverMode = false;
                 timeRemaining = 0;
-                MoveSpeed /= 3;
-                Gap *= 3;
+                FindObjectOfType<Fever>().FeverModeOff();
                 diamondInRow = 0;
                 FindObjectOfType<GameManager>().DiamondZero();
             }
@@ -113,8 +112,7 @@ public class Movement : MonoBehaviour
         transform.position = new Vector3(0, transform.position.y, transform.position.z);
         transform.LookAt(new Vector3(0, transform.position.y, transform.position.z+100));
         feverMode = true;
-        MoveSpeed *= 3;
-        Gap /= 3;
+        FindObjectOfType<Fever>().FeverModeOn();
         timeRemaining = 5;
         
         
@@ -126,6 +124,10 @@ public class Movement : MonoBehaviour
     private void OnTriggerEnter(Collider colider)
     {
         string col = colider.gameObject.tag;
+        if (col == "Wall")
+        {
+            transform.Rotate(0.0f, -90.0f, 0.0f);
+        }
         if (col == "diamond")
         {
             FindObjectOfType<GameManager>().DiamondScore();
@@ -165,27 +167,27 @@ public class Movement : MonoBehaviour
 
         if (col == "blue check")
         {
-            body.GetComponent<Renderer>().material.color = Color.cyan;
+            body.GetComponent<Renderer>().material.color = new Color (0.2627f, 0.6666f, 0.5450f, 1);
             color = "cyan";
         }
         if (col == "red check")
         {
-            body.GetComponent<Renderer>().material.color = Color.red;
+            body.GetComponent<Renderer>().material.color = new Color(1, 0.0862f, 0.3294f, 1);
             color = "red";
         }
         if (col == "yellow check")
         {
-            body.GetComponent<Renderer>().material.color = Color.yellow;
+            body.GetComponent<Renderer>().material.color = new Color(0.9764f, 0.7803f, 0.3098f, 1);
             color = "yellow";
         }
         if (col == "magenta check")
         {
-            body.GetComponent<Renderer>().material.color = Color.magenta;
+            body.GetComponent<Renderer>().material.color = new Color(0.8705f, 0.6666f, 1, 1); ;
             color = "magenta";
         }
         if (col == "orange check")
         {
-            body.GetComponent<Renderer>().material.color = new Color(1, 0.6f, 0, 1);
+            body.GetComponent<Renderer>().material.color = new Color(0.9529f, 0.4470f, 0.1725f, 1);
             color = "orange";
         }
     }
